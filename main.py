@@ -1,4 +1,7 @@
-<<<<<<< HEAD
+import audio_utils as au
+import numpy as np
+import soundfile as sf
+
 sample_rate = 16000
 samples = [0.02, 0.08, -0.04, -0.12]
 
@@ -32,30 +35,19 @@ def normalize_audio(samples):
     gain = 1.0 / peak
     return apply_gain(samples, gain)
 
-normailzed_samples = normalize_audio(samples)
+#sf.read zwraca 2 wartosci: audio i sample rate
+#audio to tablica probek
+#sample_rate - liczba probek na sekunde
+audio, sample_rate = sf.read("nagranie.wav", dtype="float32", always_2d=True)
+print("Ksztalt: ", audio.shape)
+print("Probkowanie: ", sample_rate)
 
-print("Przed: ", samples)
-print("Po: ", normailzed_samples)
-print("Szczyt po: ", peak_amplitude(normailzed_samples))
-=======
-import audio_utils
-import numpy as np
+mono_audio = audio.mean(axis=1)
+print("Ksztalt mono: ", mono_audio.shape)
+print("Pierwsze probki: ", mono_audio[:10])
 
-test_samples = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+duration = len(mono_audio) / sample_rate
+print("Dlugosc w sekundach: ", duration)
 
-try:
-    fragment = audio_utils.cut_audio(test_samples, sample_rate=2, start_seconds=1.0, end_seconds=3.0)
-    print("Fragment: ", fragment)
-
-except ValueError as error:
-    print("Nie udalo sie wyciac audio: ", error)
-
-samples_array = np.array(test_samples, dtype=np.float32)
-
-print("Probki: ", samples_array)
-print("Ksztalt: ", samples_array.shape)
-print("Typ liczb: ", samples_array.dtype)
-
-quieter_samples = fragment * 0.5
-print("Ciszej: ", quieter_samples)
->>>>>>> abc6146285783dc69d031745aa901c5908ad5816
+fragment = au.cut_audio(mono_audio, sample_rate, start_seconds=0.0, end_seconds=1.0)
+print("Liczba probek fragmentu: ", len(fragment))
