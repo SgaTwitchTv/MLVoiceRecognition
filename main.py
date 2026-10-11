@@ -1,9 +1,11 @@
 import audio_utils as au
 import numpy as np
 import soundfile as sf
+
 from speaker_labels import SPEAKER_LABELS
 from voice.data_index import collect_recordings, summarize_recordings
 from voice.audio import load_audio, prepare_waveform, crop_waveform
+from voice.extractor import load_extractor, extract_embeddings
 
 sample_rate = 16000
 samples = [0.02, 0.08, -0.04, -0.12]
@@ -31,17 +33,25 @@ try:
     print("Pierwsze amplitudy:", waveform[:10])
 
     waveform_tensor = prepare_waveform(waveform, source_sample_rate,) # It is the soundwave - not embedded onto a vector yet
-
     print("Typ obiektu:", type(waveform_tensor))
     print("Typ liczb:", waveform_tensor.dtype)
     print("Kształt tensora:", waveform_tensor.shape)
 
-    clip = crop_waveform(waveform_tensor)
-
+    clip = crop_waveform(waveform_tensor)   #audio
     print("Cała fala:", waveform_tensor.shape)
     print("Fragment:", clip.shape)
 
-    summarize_recordings(train_recordings) #data_index
+    batch = clip.unsqueeze(0)
+    print("Fragment:", clip.shape)
+    print("Batch:", batch.shape)
+
+    extractor = load_extractor()    #extractor
+    embeddings = extract_embeddings(extractor, batch)
+    print("Wejście:", batch.shape)
+    print("Embeddingi:", embeddings.shape)
+    print("Pierwsze 10 cech:", embeddings[0, :10])
+
+    #summarize_recordings(train_recordings) #data_index
 
 except ValueError as error:
     print("Błąd danych:", error)
