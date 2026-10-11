@@ -1,6 +1,9 @@
 import audio_utils as au
 import numpy as np
 import soundfile as sf
+from speaker_labels import SPEAKER_LABELS
+from voice.data_index import collect_recordings, summarize_recordings
+from voice.audio import load_audio, prepare_waveform
 
 sample_rate = 16000
 samples = [0.02, 0.08, -0.04, -0.12]
@@ -35,19 +38,34 @@ def normalize_audio(samples):
     gain = 1.0 / peak
     return apply_gain(samples, gain)
 
-#sf.read zwraca 2 wartosci: audio i sample rate
-#audio to tablica probek
-#sample_rate - liczba probek na sekunde
-audio, sample_rate = sf.read("nagranie.wav", dtype="float32", always_2d=True)
-print("Ksztalt: ", audio.shape)
-print("Probkowanie: ", sample_rate)
+####################################################################
 
-mono_audio = audio.mean(axis=1)
-print("Ksztalt mono: ", mono_audio.shape)
-print("Pierwsze probki: ", mono_audio[:10])
+label = SPEAKER_LABELS["speaker_001"]
+print("Etykieta:", label)
 
-duration = len(mono_audio) / sample_rate
-print("Dlugosc w sekundach: ", duration)
+try:
+    train_recordings = collect_recordings("data/train") #data_index
 
-fragment = au.cut_audio(mono_audio, sample_rate, start_seconds=0.0, end_seconds=1.0)
-print("Liczba probek fragmentu: ", len(fragment))
+    print("Zbiór treningowy:")
+    summarize_recordings(train_recordings) #data_index
+
+    audio_path, speaker_id, label = train_recordings[0]
+
+    waveform, source_sample_rate = load_audio(audio_path) #audio_py
+
+    # All the data about the recording
+    print("Plik:", audio_path)
+    print("Osoba:", speaker_id)
+    print("Klasa:", label)
+    print("Kształt fali:", waveform.shape)
+    print("Próbkowanie pliku:", source_sample_rate)
+    print("Pierwsze amplitudy:", waveform[:10])
+
+    waveform_tensor = prepare_waveform(waveform, source_sample_rate,)
+
+    print("Typ obiektu:", type(waveform_tensor))
+    print("Typ liczb:", waveform_tensor.dtype)
+    print("Kształt tensora:", waveform_tensor.shape)
+
+except ValueError as error:
+    print("Błąd danych:", error)
