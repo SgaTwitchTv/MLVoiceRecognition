@@ -3,7 +3,7 @@ import torchaudio
 import numpy as np
 import soundfile as sf
 
-from voice.config import SAMPLE_RATE
+from voice.config import SAMPLE_RATE, CLIP_SAMPLES
 
 # A function to load audio from the file
 def load_audio(file_path):
@@ -30,3 +30,15 @@ def prepare_waveform(mono_audio, source_sample_rate):
         waveform = torchaudio.functional.resample(waveform, orig_freq=source_sample_rate, new_freq=SAMPLE_RATE,)
 
     return waveform
+
+# A function responsible for cropping a waveform
+def crop_waveform(waveform):
+    sample_count = waveform.shape[0]
+
+    if sample_count < CLIP_SAMPLES:
+        raise ValueError("Nagranie musi mieć co najmniej 3 sekundy.")
+
+    start_index = (sample_count - CLIP_SAMPLES) // 2
+    end_index = start_index + CLIP_SAMPLES
+
+    return waveform[start_index:end_index]

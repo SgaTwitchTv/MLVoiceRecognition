@@ -3,7 +3,7 @@ import numpy as np
 import soundfile as sf
 from speaker_labels import SPEAKER_LABELS
 from voice.data_index import collect_recordings, summarize_recordings
-from voice.audio import load_audio, prepare_waveform
+from voice.audio import load_audio, prepare_waveform, crop_waveform
 
 sample_rate = 16000
 samples = [0.02, 0.08, -0.04, -0.12]
@@ -35,6 +35,11 @@ try:
     print("Typ obiektu:", type(waveform_tensor))
     print("Typ liczb:", waveform_tensor.dtype)
     print("Kształt tensora:", waveform_tensor.shape)
+
+    clip = crop_waveform(waveform_tensor)
+
+    print("Cała fala:", waveform_tensor.shape)
+    print("Fragment:", clip.shape)
 
     summarize_recordings(train_recordings) #data_index
 
