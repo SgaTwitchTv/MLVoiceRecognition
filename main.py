@@ -55,3 +55,5 @@ try:
 
 except ValueError as error:
     print("Błąd danych:", error)
+
+    

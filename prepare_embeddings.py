@@ -56,4 +56,8 @@ def prepare_embeddings(directory, output_path, extractor):
 # if we launch directly via shell, then go for the cast of the upper function
 if __name__ == "__main__":
     extractor = load_extractor()
+
+    # and we go for embeddings of all 3 groups of data
     prepare_embeddings(directory="data/train", output_path="embeddings/train.pt", extractor=extractor,)
+    prepare_embeddings(directory="data/validation", output_path="embeddings/validation.pt", extractor=extractor,)
+    prepare_embeddings(directory="data/test", output_path="embeddings/test.pt", extractor=extractor,)
